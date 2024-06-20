@@ -1,2 +1,2 @@
-BasedOnStyle: Chromium
-SortIncludes: false
+BasedOnStyle: Google
+IndentWidth: 4
