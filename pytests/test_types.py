@@ -1,8 +1,8 @@
-import lib.rime_api as rime_api
+import lib.pyrime as pyrime
 
 
 def test_traits():
-    traits = rime_api.RimeTraits()
+    traits = pyrime.RimeTraits()
     traits.shared_data_dir = "shared_data_dir"
     traits.user_data_dir = "user_data_dir"
     traits.distribution_name = "distribution_name"

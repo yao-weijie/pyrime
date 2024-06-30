@@ -17,7 +17,7 @@ namespace py = pybind11;
         return var;                                           \
     }))
 
-PYBIND11_MODULE(rime_api, m) {
+PYBIND11_MODULE(pyrime, m) {
     m.doc() = "python bind of librime apis";
 
     // TODO: modules
