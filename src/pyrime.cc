@@ -97,7 +97,7 @@ PYBIND11_MODULE(pyrime, m) {
     py::class_<RimeMenu>(m, "RimeMenu", py::dynamic_attr())
         .def(py::init<>())
         .def_readonly("page_size", &RimeMenu::page_size)
-        .def_readonly("page_size", &RimeMenu::page_no)
+        .def_readonly("page_no", &RimeMenu::page_no)
         .DEF_BOOL_PROPERTY_RO(RimeMenu, is_last_page)
         .def_readonly("highlighted_candidate_index", &RimeMenu::highlighted_candidate_index)
         .def_readonly("num_candidates", &RimeMenu::num_candidates)
