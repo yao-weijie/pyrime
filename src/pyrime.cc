@@ -87,7 +87,6 @@ PYBIND11_MODULE(pyrime, m) {
         .def_readonly("cursor_pos", &RimeComposition::cursor_pos)
         .def_readonly("sel_start", &RimeComposition::sel_start)
         .def_readonly("sel_end", &RimeComposition::sel_end)
-        .def_readonly("cursor_pos", &RimeComposition::cursor_pos)
         .def_readonly("preedit", &RimeComposition::preedit);
 
     py::class_<RimeCandidate>(m, "RimeCandidate", py::dynamic_attr())
