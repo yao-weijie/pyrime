@@ -18,6 +18,54 @@ namespace py = pybind11;
 PYBIND11_MODULE(pyrime, m) {
     m.doc() = "python bind of librime apis";
 
+    // setup and finalize
+    m.def("RimeSetup", &RimeSetup, py::arg("traits"));
+    m.def("RimeInitialize", &RimeInitialize, py::arg("traits"));
+    m.def("RimeFinalize", &RimeFinalize);
+    // maintenance
+    m.def("RimeStartMaintenance", &RimeStartMaintenance, py::arg("full_check"));
+    m.def("RimeIsMaintenancing", &RimeIsMaintenancing);
+    m.def("RimeJoinMaintenanceThread", &RimeJoinMaintenanceThread);
+    // deployment
+    m.def("RimeDeployerInitialize", &RimeDeployerInitialize, py::arg("traits"));
+    m.def("RimePrebuildAllSchemas", &RimePrebuildAllSchemas);
+    m.def("RimeDeployWorkspace", &RimeDeployWorkspace);
+    m.def("RimeDeploySchema", &RimeDeploySchema, py::arg("schema_file"));
+    m.def("RimeDeployConfigFile", &RimeDeployConfigFile, py::arg("file_name"),
+          py::arg("version_key"));
+    m.def("RimeSyncUserData", &RimeSyncUserData);
+    // session management
+    m.def("RimeCreateSession", &RimeCreateSession);
+    m.def("RimeFindSession", &RimeFindSession, py::arg("session_id"));
+    m.def("RimeDestroySession", &RimeDestroySession, py::arg("session_id"));
+    m.def("RimeCleanupStaleSessions", &RimeCleanupStaleSessions);
+    m.def("RimeCleanupAllSessions", &RimeCleanupAllSessions);
+    // input
+    m.def("RimeProcessKey", &RimeProcessKey, py::arg("session_id"), py::arg("keycode"),
+          py::arg("mask"));
+    m.def("RimeCommitComposition", &RimeCommitComposition, py::arg("session_id"));
+    m.def("RimeClearComposition", &RimeClearComposition, py::arg("session_id"));
+    // input test
+    m.def("RimeSimulateKeySequence", &RimeSimulateKeySequence, py::arg("session_id"),
+          py::arg("key_sequence"));
+    m.def("RimeSetInput", &RimeSetInput, py::arg("session_id"), py::arg("input"));
+    // output
+    m.def("RimeGetContext", &RimeGetContext, py::arg("session_id"), py::arg("context"));
+    m.def("RimeFreeStatus", &RimeFreeStatus, py::arg("context"));
+    m.def("RimeGetCommit", &RimeGetCommit, py::arg("session_id"), py::arg("commit"));
+    m.def("RimeFreeCommit", &RimeFreeCommit, py::arg("commit"));
+    m.def("RimeGetStatus", &RimeGetStatus, py::arg("session_id"), py::arg("status"));
+    m.def("RimeFreeStatus", &RimeFreeStatus, py::arg("status"));
+
+    // runtime options
+    m.def("RimeSetOption", &RimeSetOption, py::arg("session_id"), py::arg("option"),
+          py::arg("value"));
+    m.def("RimeGetOption", &RimeGetOption, py::arg("session_id"), py::arg("option"));
+    m.def("RimeSetProperty", &RimeSetProperty, py::arg("session_id"), py::arg("prop"),
+          py::arg("value"));
+    m.def("RimeGetProperty", &RimeGetProperty, py::arg("session_id"), py::arg("prop"),
+          py::arg("value"), py::arg("buffer_size"));
+
     // TODO: modules
     py::class_<RimeTraits>(m, "RimeTraits", py::dynamic_attr())
         .STRUCT_INIT(RimeTraits)
