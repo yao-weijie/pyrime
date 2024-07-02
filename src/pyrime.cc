@@ -12,6 +12,7 @@ namespace py = pybind11;
         #prop, [](const Type& self) { return self.prop; }, \
         [](Type& self, const char* s) { self.prop = strdup(s); })
 
+// optional, explicitly convert to python bool True/False
 #define DEF_BOOL_PROPERTY_RO(Type, prop) \
     def_property_readonly(#prop, [](const Type& self) { return py::bool_(self.prop); })
 
@@ -98,7 +99,7 @@ PYBIND11_MODULE(pyrime, m) {
         .def(py::init<>())
         .def_readonly("page_size", &RimeMenu::page_size)
         .def_readonly("page_no", &RimeMenu::page_no)
-        .DEF_BOOL_PROPERTY_RO(RimeMenu, is_last_page)
+        .def_readonly("is_last_page", &RimeMenu::is_last_page)
         .def_readonly("highlighted_candidate_index", &RimeMenu::highlighted_candidate_index)
         .def_readonly("num_candidates", &RimeMenu::num_candidates)
         // TODO: candidates
@@ -128,11 +129,11 @@ PYBIND11_MODULE(pyrime, m) {
         .STRUCT_INIT(RimeStatus)
         .def_readonly("schema_id", &RimeStatus::schema_id)
         .def_readonly("schema_name", &RimeStatus::schema_name)
-        .DEF_BOOL_PROPERTY_RO(RimeStatus, is_disabled)
-        .DEF_BOOL_PROPERTY_RO(RimeStatus, is_composing)
-        .DEF_BOOL_PROPERTY_RO(RimeStatus, is_ascii_mode)
-        .DEF_BOOL_PROPERTY_RO(RimeStatus, is_full_shape)
-        .DEF_BOOL_PROPERTY_RO(RimeStatus, is_simplified)
-        .DEF_BOOL_PROPERTY_RO(RimeStatus, is_traditional)
-        .DEF_BOOL_PROPERTY_RO(RimeStatus, is_ascii_punct);
+        .def_readonly("is_disabled", &RimeStatus::is_disabled)
+        .def_readonly("is_composing", &RimeStatus::is_composing)
+        .def_readonly("is_ascii_mode", &RimeStatus::is_ascii_mode)
+        .def_readonly("is_full_shape", &RimeStatus::is_full_shape)
+        .def_readonly("is_simplified", &RimeStatus::is_simplified)
+        .def_readonly("is_traditional", &RimeStatus::is_traditional)
+        .def_readonly("is_ascii_punct", &RimeStatus::is_ascii_punct);
 }
