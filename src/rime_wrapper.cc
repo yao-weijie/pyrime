@@ -2,6 +2,9 @@
 
 #include <rime_api.h>
 
+#define K_PgUp 0xff55
+#define K_PgDn 0xff56
+
 // used for debug and visualization
 // actually, these fmt functions can be over-written in python file
 py::str fmt_traits(const RimeTraits& traits) {
@@ -21,22 +24,22 @@ py::str fmt_candidate(const RimeCandidate& candidate) {
 }
 
 py::str fmt_composition(const RimeComposition& composition) {
-    return py::str("{}\n").format(composition.preedit);
+    return py::str("composition: {}\n").format(composition.preedit);
 }
 py::str fmt_menu(const RimeMenu& menu) {
-    auto s = py::str("page_no: {}\n").format(menu.page_no);
+    auto s = py::str("page_no: {}, page_size: {}\n").format(menu.page_no, menu.page_size);
     for (int i = 0; i < menu.num_candidates; i++) {
-        s += fmt_candidate(menu.candidates[i]);
+        s += py::str("{} ").format(i) + fmt_candidate(menu.candidates[i]);
     }
     return s;
 }
 
 py::str fmt_context(const RimeContext& context) {
-    return py::str("{}\n").format(context.commit_text_preview)  //
-           + fmt_composition(context.composition)               //
+    return py::str("commit_preview: {}\n").format(context.commit_text_preview)  //
+           + fmt_composition(context.composition)                               //
            + fmt_menu(context.menu);
 }
-
+py::str fmt_commit(const RimeCommit& commit) { return py::str("commit: {}\n").format(commit.text); }
 py::str fmt_status(const RimeStatus& status) {
     return py::str("schema_id:      {}\n").format(status.schema_id) +
            py::str("schema_name:    {}\n").format(status.schema_name) +

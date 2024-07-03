@@ -54,7 +54,7 @@ PYBIND11_MODULE(pyrime, m) {
     m.def("RimeSetInput", &RimeSetInput, py::arg("session_id"), py::arg("input"));
     // output
     m.def("RimeGetContext", &RimeGetContext, py::arg("session_id"), py::arg("context"));
-    m.def("RimeFreeStatus", &RimeFreeStatus, py::arg("context"));
+    m.def("RimeFreeContext", &RimeFreeContext, py::arg("context"));
     m.def("RimeGetCommit", &RimeGetCommit, py::arg("session_id"), py::arg("commit"));
     m.def("RimeFreeCommit", &RimeFreeCommit, py::arg("commit"));
     m.def("RimeGetStatus", &RimeGetStatus, py::arg("session_id"), py::arg("status"));
@@ -121,7 +121,7 @@ PYBIND11_MODULE(pyrime, m) {
     py::class_<RimeCommit>(m, "RimeCommit", py::dynamic_attr())
         .STRUCT_INIT(RimeCommit)
         .def_readonly("text", &RimeCommit::text)
-        .def("__str__", [](const RimeCommit& self) { return py::str("{}\n").format(self.text); });
+        .def("__str__", &fmt_commit);
 
     py::class_<RimeContext>(m, "RimeContext", py::dynamic_attr())
         .STRUCT_INIT(RimeContext)

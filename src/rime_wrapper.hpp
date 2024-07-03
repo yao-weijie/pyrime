@@ -6,6 +6,7 @@
 
 namespace py = pybind11;
 
+py::str fmt_commit(const RimeCommit& commit);
 py::str fmt_traits(const RimeTraits& traits);
 py::str fmt_candidate(const RimeCandidate& candidate);
 py::str fmt_composition(const RimeComposition& composition);
