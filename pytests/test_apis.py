@@ -79,13 +79,25 @@ def test(tmpdir):
         pyrime.RimeGetContext(id, context0)
         print(context0)
 
-        # define K_PgUp 0xff55
-        # define K_PgDn 0xff56
-        pyrime.RimeProcessKey(id, 0xFF56, 0)
+        pyrime.RimePageDown(id)
         context1 = pyrime.RimeContext()
         pyrime.RimeGetContext(id, context1)
         assert context1.menu.page_no == 1
         print(context1)
+
+        pyrime.RimePageUp(id)
+        pyrime.RimeGetContext(id, context1)
+        assert context1.menu.page_no == 0
+        # print(context1)
+
+        context = pyrime.RimeContext()
+        while pyrime.RimePageDown(id):  # always 1 enen if is_last_page
+            pyrime.RimeGetContext(id, context)
+            if context.menu.is_last_page == 1:
+                break
+
+        assert context.menu.is_last_page == 1
+        print("last page no", context.menu.page_no)
 
         pyrime.RimeDestroySession(id)
 

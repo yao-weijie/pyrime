@@ -48,6 +48,14 @@ PYBIND11_MODULE(pyrime, m) {
           py::arg("mask"));
     m.def("RimeCommitComposition", &RimeCommitComposition, py::arg("session_id"));
     m.def("RimeClearComposition", &RimeClearComposition, py::arg("session_id"));
+    m.def(
+        "RimePageDown",
+        [](RimeSessionId session_id) -> Bool { return RimeProcessKey(session_id, K_PgDn, 0); },
+        py::arg("session_id"));
+    m.def(
+        "RimePageUp",
+        [](RimeSessionId session_id) -> Bool { return RimeProcessKey(session_id, K_PgUp, 0); },
+        py::arg("session_id"));
     // input test
     m.def("RimeSimulateKeySequence", &RimeSimulateKeySequence, py::arg("session_id"),
           py::arg("key_sequence"));

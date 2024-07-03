@@ -2,9 +2,6 @@
 
 #include <rime_api.h>
 
-#define K_PgUp 0xff55
-#define K_PgDn 0xff56
-
 // used for debug and visualization
 // actually, these fmt functions can be over-written in python file
 py::str fmt_traits(const RimeTraits& traits) {
