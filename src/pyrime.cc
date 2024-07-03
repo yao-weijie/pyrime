@@ -3,6 +3,8 @@
 
 #include <cstring>
 
+#include "rime_wrapper.hpp"
+
 namespace py = pybind11;
 
 #define STRUCT_INIT(Type) def(py::init([]() { RIME_STRUCT(Type, var) return var; }))
@@ -79,7 +81,8 @@ PYBIND11_MODULE(pyrime, m) {
         .def_readwrite("min_log_level", &RimeTraits::min_log_level)
         .DEF_STR_PROPERTY(RimeTraits, log_dir)
         .DEF_STR_PROPERTY(RimeTraits, prebuilt_data_dir)
-        .DEF_STR_PROPERTY(RimeTraits, staging_dir);
+        .DEF_STR_PROPERTY(RimeTraits, staging_dir)
+        .def("__str__", &fmt_traits);
 
     py::class_<RimeComposition>(m, "RimeComposition", py::dynamic_attr())
         .def(py::init<>())
@@ -87,12 +90,14 @@ PYBIND11_MODULE(pyrime, m) {
         .def_readonly("cursor_pos", &RimeComposition::cursor_pos)
         .def_readonly("sel_start", &RimeComposition::sel_start)
         .def_readonly("sel_end", &RimeComposition::sel_end)
-        .def_readonly("preedit", &RimeComposition::preedit);
+        .def_readonly("preedit", &RimeComposition::preedit)
+        .def("__str__", &fmt_composition);
 
     py::class_<RimeCandidate>(m, "RimeCandidate", py::dynamic_attr())
         .def(py::init<>())
         .def_readonly("text", &RimeCandidate::text)
-        .def_readonly("comment", &RimeCandidate::comment);
+        .def_readonly("comment", &RimeCandidate::comment)
+        .def("__str__", &fmt_candidate);
 
     py::class_<RimeMenu>(m, "RimeMenu", py::dynamic_attr())
         .def(py::init<>())
@@ -110,11 +115,13 @@ PYBIND11_MODULE(pyrime, m) {
                                    }
                                    return candidates;
                                })
+        .def("__str__", &fmt_menu)
         .def_readonly("select_keys", &RimeMenu::select_keys);
 
     py::class_<RimeCommit>(m, "RimeCommit", py::dynamic_attr())
         .STRUCT_INIT(RimeCommit)
-        .def_readonly("text", &RimeCommit::text);
+        .def_readonly("text", &RimeCommit::text)
+        .def("__str__", [](const RimeCommit& self) { return py::str("{}\n").format(self.text); });
 
     py::class_<RimeContext>(m, "RimeContext", py::dynamic_attr())
         .STRUCT_INIT(RimeContext)
@@ -122,7 +129,7 @@ PYBIND11_MODULE(pyrime, m) {
         .def_readonly("menu", &RimeContext::menu)
         .def_readonly("commit_text_preview", &RimeContext::commit_text_preview)
         // TODO: select_labels
-        ;
+        .def("__str__", &fmt_context);
 
     py::class_<RimeStatus>(m, "RimeStatus", py::dynamic_attr())
         .STRUCT_INIT(RimeStatus)
@@ -134,5 +141,6 @@ PYBIND11_MODULE(pyrime, m) {
         .def_readonly("is_full_shape", &RimeStatus::is_full_shape)
         .def_readonly("is_simplified", &RimeStatus::is_simplified)
         .def_readonly("is_traditional", &RimeStatus::is_traditional)
-        .def_readonly("is_ascii_punct", &RimeStatus::is_ascii_punct);
+        .def_readonly("is_ascii_punct", &RimeStatus::is_ascii_punct)
+        .def("__str__", &fmt_status);
 }
