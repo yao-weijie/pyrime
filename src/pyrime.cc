@@ -111,6 +111,8 @@ PYBIND11_MODULE(pyrime, m) {
             return py::str("{} {}\n").format(self.schema_id, self.name);
         });
 
+    m.def("get_version", api->get_version);
+
     // setup and finalize
     m.def("setup", api->setup, py::arg("traits"));
     m.def("initialize", api->initialize, py::arg("traits"));
