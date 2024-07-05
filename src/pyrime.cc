@@ -152,6 +152,22 @@ PYBIND11_MODULE(pyrime, m) {
     m.def("free_commit", api->free_commit, py::arg("commit"));
     m.def("get_status", api->get_status, py::arg("session_id"), py::arg("status"));
     m.def("free_status", api->free_status, py::arg("status"));
+    // Accessing candidate list
+    m.def("get_candidate_list", [](RimeSessionId session_id) -> py::list {
+        py::list cand_list;
+        RimeCandidateListIterator it;
+        api->candidate_list_begin(session_id, &it);
+
+        while (1) {
+            if (api->candidate_list_next(&it)) {
+                cand_list.append(strdup(it.candidate.text));
+            } else {
+                break;
+            }
+        }
+        return cand_list;
+    });
+
     // runtime options
     m.def("set_option", api->set_option, py::arg("session_id"), py::arg("option"),
           py::arg("value"));

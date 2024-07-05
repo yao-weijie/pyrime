@@ -29,6 +29,12 @@ def test(tmpdir):
         id = pyrime.create_session()
         pyrime.set_input(id, "haohaohao")
 
+        cand_list = pyrime.get_candidate_list(id)
+        assert isinstance(cand_list, list)
+        for cand in cand_list:
+            print(cand)
+            pass
+
         context = pyrime.RimeContext()
         pyrime.get_context(id, context)
         assert isinstance(context.menu, pyrime.RimeMenu)
