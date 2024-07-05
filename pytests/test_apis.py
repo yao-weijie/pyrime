@@ -5,32 +5,32 @@ from config import get_traits
 def test(tmpdir):
     print(tmpdir)
     traits = get_traits(tmpdir)
-    pyrime.RimeSetup(traits)
-    pyrime.RimeInitialize(traits)
+    pyrime.setup(traits)
+    pyrime.initialize(traits)
 
     def test_session():
-        id = pyrime.RimeCreateSession()
-        assert pyrime.RimeFindSession(session_id=id)
+        id = pyrime.create_session()
+        assert pyrime.find_session(session_id=id)
 
-        pyrime.RimeDestroySession(id)
-        assert not pyrime.RimeFindSession(id)
+        pyrime.destroy_session(id)
+        assert not pyrime.find_session(id)
 
     def test_maintenance():
         for check in (0, 1):
-            if pyrime.RimeStartMaintenance(full_check=check):
-                pyrime.RimeJoinMaintenanceThread()
+            if pyrime.start_maintenance(full_check=check):
+                pyrime.join_maintenance_thread()
 
     def test_deploy(traits):
-        pyrime.RimeDeployerInitialize(traits)
-        pyrime.RimePrebuildAllSchemas()
-        pyrime.RimeDeployWorkspace()
+        pyrime.deployer_initialize(traits)
+        pyrime.prebuild()
+        pyrime.deploy()
 
     def test_input():
-        id = pyrime.RimeCreateSession()
-        pyrime.RimeSetInput(id, "haohaohao")
+        id = pyrime.create_session()
+        pyrime.set_input(id, "haohaohao")
 
         context = pyrime.RimeContext()
-        pyrime.RimeGetContext(id, context)
+        pyrime.get_context(id, context)
         assert isinstance(context.menu, pyrime.RimeMenu)
         assert isinstance(context.composition, pyrime.RimeComposition)
         assert context.menu.page_no == 0
@@ -46,65 +46,64 @@ def test(tmpdir):
 
         print(context)
 
-        pyrime.RimeFreeContext(context)  # seems gc by python?
-        pyrime.RimeGetContext(id, context)
+        pyrime.free_context(context)  # seems gc by python?
+        pyrime.get_context(id, context)
 
         status = pyrime.RimeStatus()
-        pyrime.RimeGetStatus(id, status)
+        pyrime.get_status(id, status)
         assert status.is_composing == 1
         print(status)
 
-        pyrime.RimeCommitComposition(id)
+        pyrime.commit_composition(id)
         commit = pyrime.RimeCommit()
-        pyrime.RimeGetCommit(id, commit)
+        pyrime.get_commit(id, commit)
         print(commit)
 
         # after commit
-        pyrime.RimeGetContext(id, context)
+        pyrime.get_context(id, context)
         assert context.commit_text_preview is None
         assert context.composition.length == 0
         assert context.menu.num_candidates == 0
         print(context)
 
-        pyrime.RimeGetStatus(id, status)
+        pyrime.get_status(id, status)
         assert status.is_composing == 0
         # print(status)
 
-        pyrime.RimeDestroySession(id)
+        pyrime.destroy_session(id)
 
     def test_page():
-        id = pyrime.RimeCreateSession()
-        pyrime.RimeSetInput(id, "haohaohao")
+        id = pyrime.create_session()
+        pyrime.set_input(id, "haohaohao")
         context0 = pyrime.RimeContext()
-        pyrime.RimeGetContext(id, context0)
+        pyrime.get_context(id, context0)
         print(context0)
 
-        pyrime.RimePageDown(id)
+        pyrime.page_down(id)
         context1 = pyrime.RimeContext()
-        pyrime.RimeGetContext(id, context1)
+        pyrime.get_context(id, context1)
         assert context1.menu.page_no == 1
         print(context1)
 
-        pyrime.RimePageUp(id)
-        pyrime.RimeGetContext(id, context1)
+        pyrime.page_up(id)
+        pyrime.get_context(id, context1)
         assert context1.menu.page_no == 0
         # print(context1)
 
         context = pyrime.RimeContext()
-        while pyrime.RimePageDown(id):  # always 1 enen if is_last_page
-            pyrime.RimeGetContext(id, context)
+        while pyrime.page_down(id):  # always 1 enen if is_last_page
+            pyrime.get_context(id, context)
             if context.menu.is_last_page == 1:
                 break
 
         assert context.menu.is_last_page == 1
         print("last page no", context.menu.page_no)
 
-        pyrime.RimeDestroySession(id)
+        pyrime.destroy_session(id)
 
     test_session()
     test_maintenance()
     test_deploy(traits)
     test_input()
     test_page()
-
-    pyrime.RimeFinalize()
+    pyrime.finalize()

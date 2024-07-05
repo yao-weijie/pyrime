@@ -18,64 +18,10 @@ namespace py = pybind11;
 #define DEF_BOOL_PROPERTY_RO(Type, prop) \
     def_property_readonly(#prop, [](const Type& self) { return py::bool_(self.prop); })
 
+static RimeApi* api = rime_get_api();
+
 PYBIND11_MODULE(pyrime, m) {
     m.doc() = "python bind of librime apis";
-
-    // setup and finalize
-    m.def("RimeSetup", &RimeSetup, py::arg("traits"));
-    m.def("RimeInitialize", &RimeInitialize, py::arg("traits"));
-    m.def("RimeFinalize", &RimeFinalize);
-    // maintenance
-    m.def("RimeStartMaintenance", &RimeStartMaintenance, py::arg("full_check"));
-    m.def("RimeIsMaintenancing", &RimeIsMaintenancing);
-    m.def("RimeJoinMaintenanceThread", &RimeJoinMaintenanceThread);
-    // deployment
-    m.def("RimeDeployerInitialize", &RimeDeployerInitialize, py::arg("traits"));
-    m.def("RimePrebuildAllSchemas", &RimePrebuildAllSchemas);
-    m.def("RimeDeployWorkspace", &RimeDeployWorkspace);
-    m.def("RimeDeploySchema", &RimeDeploySchema, py::arg("schema_file"));
-    m.def("RimeDeployConfigFile", &RimeDeployConfigFile, py::arg("file_name"),
-          py::arg("version_key"));
-    m.def("RimeSyncUserData", &RimeSyncUserData);
-    // session management
-    m.def("RimeCreateSession", &RimeCreateSession);
-    m.def("RimeFindSession", &RimeFindSession, py::arg("session_id"));
-    m.def("RimeDestroySession", &RimeDestroySession, py::arg("session_id"));
-    m.def("RimeCleanupStaleSessions", &RimeCleanupStaleSessions);
-    m.def("RimeCleanupAllSessions", &RimeCleanupAllSessions);
-    // input
-    m.def("RimeProcessKey", &RimeProcessKey, py::arg("session_id"), py::arg("keycode"),
-          py::arg("mask"));
-    m.def("RimeCommitComposition", &RimeCommitComposition, py::arg("session_id"));
-    m.def("RimeClearComposition", &RimeClearComposition, py::arg("session_id"));
-    m.def(
-        "RimePageDown",
-        [](RimeSessionId session_id) -> Bool { return RimeProcessKey(session_id, K_PgDn, 0); },
-        py::arg("session_id"));
-    m.def(
-        "RimePageUp",
-        [](RimeSessionId session_id) -> Bool { return RimeProcessKey(session_id, K_PgUp, 0); },
-        py::arg("session_id"));
-    // input test
-    m.def("RimeSimulateKeySequence", &RimeSimulateKeySequence, py::arg("session_id"),
-          py::arg("key_sequence"));
-    m.def("RimeSetInput", &RimeSetInput, py::arg("session_id"), py::arg("input"));
-    // output
-    m.def("RimeGetContext", &RimeGetContext, py::arg("session_id"), py::arg("context"));
-    m.def("RimeFreeContext", &RimeFreeContext, py::arg("context"));
-    m.def("RimeGetCommit", &RimeGetCommit, py::arg("session_id"), py::arg("commit"));
-    m.def("RimeFreeCommit", &RimeFreeCommit, py::arg("commit"));
-    m.def("RimeGetStatus", &RimeGetStatus, py::arg("session_id"), py::arg("status"));
-    m.def("RimeFreeStatus", &RimeFreeStatus, py::arg("status"));
-
-    // runtime options
-    m.def("RimeSetOption", &RimeSetOption, py::arg("session_id"), py::arg("option"),
-          py::arg("value"));
-    m.def("RimeGetOption", &RimeGetOption, py::arg("session_id"), py::arg("option"));
-    m.def("RimeSetProperty", &RimeSetProperty, py::arg("session_id"), py::arg("prop"),
-          py::arg("value"));
-    m.def("RimeGetProperty", &RimeGetProperty, py::arg("session_id"), py::arg("prop"),
-          py::arg("value"), py::arg("buffer_size"));
 
     // TODO: modules
     py::class_<RimeTraits>(m, "RimeTraits", py::dynamic_attr())
@@ -151,4 +97,66 @@ PYBIND11_MODULE(pyrime, m) {
         .def_readonly("is_traditional", &RimeStatus::is_traditional)
         .def_readonly("is_ascii_punct", &RimeStatus::is_ascii_punct)
         .def("__str__", &fmt_status);
+    // setup and finalize
+    m.def("setup", api->setup, py::arg("traits"));
+    m.def("initialize", api->initialize, py::arg("traits"));
+    m.def("finalize", api->finalize);
+    // maintenance
+    m.def("start_maintenance", api->start_maintenance, py::arg("full_check") = 0);
+    m.def("is_maintenance_mode", api->is_maintenance_mode);
+    m.def("join_maintenance_thread", api->join_maintenance_thread);
+
+    // deployment
+    m.def("deployer_initialize", api->deployer_initialize, py::arg("traits"));
+    m.def("prebuild", api->prebuild);
+    m.def("deploy", api->deploy);
+    m.def("deploy_schema", api->deploy_schema, py::arg("schema_file"));
+    m.def("deploy_config_file", api->deploy_config_file, py::arg("file_name"),
+          py::arg("version_key"));
+
+    // session management
+    m.def("create_session", api->create_session);
+    m.def("find_session", api->find_session, py::arg("session_id"));
+    m.def("destroy_session", api->destroy_session, py::arg("session_id"));
+    m.def("cleanup_stale_sessions", api->cleanup_stale_sessions);
+    m.def("cleanup_all_sessions", api->cleanup_all_sessions);
+
+    // input
+    m.def("set_input", api->set_input, py::arg("session_id"), py::arg("input"));
+    m.def("simulate_key_sequence", api->simulate_key_sequence, py::arg("session_id"),
+          py::arg("key_sequence"));
+    m.def("process_key", api->process_key, py::arg("session_id"), py::arg("keycode"),
+          py::arg("mask") = 0);
+    m.def("commit_composition", api->commit_composition, py::arg("session_id"));
+    m.def("clear_composition", api->clear_composition, py::arg("session_id"));
+    m.def("page_down",
+          [](const RimeSessionId session_id) { return api->process_key(session_id, K_PgDn, 0); });
+    m.def("page_up",
+          [](const RimeSessionId session_id) { api->process_key(session_id, K_PgUp, 0); });
+
+    // output
+    m.def("get_context", api->get_context, py::arg("session_id"), py::arg("context"));
+    m.def("free_context", api->free_context, py::arg("context"));
+    m.def("get_commit", api->get_commit, py::arg("session_id"), py::arg("commit"));
+    m.def("free_commit", api->free_commit, py::arg("commit"));
+    m.def("get_status", api->get_status, py::arg("session_id"), py::arg("status"));
+    m.def("free_status", api->free_status, py::arg("status"));
+    // runtime options
+    m.def("set_option", api->set_option, py::arg("session_id"), py::arg("option"),
+          py::arg("value"));
+    m.def("get_option", api->get_option, py::arg("session_id"), py::arg("option"));
+    m.def("set_property", api->set_property, py::arg("session_id"), py::arg("prop"),
+          py::arg("value"));
+    m.def(
+        "get_property",
+        [](RimeSessionId session_id, const char* prop, size_t buffer_size = 128) -> char* {
+            char* value = new char[buffer_size];
+            if (api->get_property(session_id, prop, value, buffer_size)) {
+                return value;
+            } else {
+                delete[] value;
+                return NULL;
+            }
+        },
+        py::arg("session_id"), py::arg("prop"), py::arg("buffer_size") = 128);
 }
