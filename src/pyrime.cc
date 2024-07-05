@@ -196,6 +196,7 @@ PYBIND11_MODULE(pyrime, m) {
     m.def("set_option", api->set_option, py::arg("session_id"), py::arg("option"),
           py::arg("value"));
     m.def("get_option", api->get_option, py::arg("session_id"), py::arg("option"));
+    // TODO: property test
     m.def("set_property", api->set_property, py::arg("session_id"), py::arg("prop"),
           py::arg("value"));
     m.def(

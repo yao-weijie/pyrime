@@ -145,6 +145,25 @@ def test(tmpdir):
 
         pyrime.destroy_session(id)
 
+    def test_runtime_options():
+        id = pyrime.create_session()
+        pyrime.get_option(id, "")
+        options = (
+            "disabled",  # ?
+            "composing",  # ?
+            "ascii_mode",
+            "full_shape",
+            "simplified",
+            "traditional",
+            "ascii_punct",
+        )
+        for opt in options:
+            for m in (0, 1):
+                pyrime.set_option(id, opt, m)
+                assert pyrime.get_option(id, opt) == m
+
+        pyrime.destroy_session(id)
+
     test_session()
     test_maintenance()
     test_deploy(traits)
@@ -152,5 +171,6 @@ def test(tmpdir):
     test_output_()
     test_page()
     test_schema_list()
+    test_runtime_options()
 
     pyrime.finalize()
