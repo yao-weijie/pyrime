@@ -99,6 +99,15 @@ PYBIND11_MODULE(pyrime, m) {
         .def_readonly("is_traditional", &RimeStatus::is_traditional)
         .def_readonly("is_ascii_punct", &RimeStatus::is_ascii_punct)
         .def("__str__", &fmt_status);
+
+    py::class_<RimeSchemaListItem>(m, "RimeSchemaListItem")
+        .def(py::init<>())
+        .def_readonly("schema_id", &RimeSchemaListItem::schema_id)
+        .def_readonly("name", &RimeSchemaListItem::name)
+        .def("__str__", [](const RimeSchemaListItem& self) {
+            return py::str("{} {}\n").format(self.schema_id, self.name);
+        });
+
     // setup and finalize
     m.def("setup", api->setup, py::arg("traits"));
     m.def("initialize", api->initialize, py::arg("traits"));
@@ -161,4 +170,28 @@ PYBIND11_MODULE(pyrime, m) {
             }
         },
         py::arg("session_id"), py::arg("prop"), py::arg("buffer_size") = 128);
+    m.def(
+        "get_current_schema",
+        [](RimeSessionId session_id, size_t buffer_size = 128) -> char* {
+            char* schema_id = new char[buffer_size];
+            if (api->get_current_schema(session_id, schema_id, buffer_size)) {
+                return schema_id;
+            } else {
+                delete[] schema_id;
+                return NULL;
+            }
+        },
+        py::arg("session_id"), py::arg("buffer_size") = 128);
+    m.def("select_schema", api->select_schema, py::arg("session_id"), py::arg("schema_id"));
+    m.def("get_schema_list", []() -> py::list {
+        py::list py_scheme_list;
+        RimeSchemaList schema_list;
+        if (api->get_schema_list(&schema_list)) {
+            for (int i = 0; i < schema_list.size; i++) {
+                py_scheme_list.append(schema_list.list[i]);
+            }
+        }
+        // api->free_schema_list(&schema_list); // ownership taken by python?
+        return py_scheme_list;
+    });
 }

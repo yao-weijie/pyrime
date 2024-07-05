@@ -101,9 +101,29 @@ def test(tmpdir):
 
         pyrime.destroy_session(id)
 
+    def test_schema_list():
+        id = pyrime.create_session()
+        current_schema_id = pyrime.get_current_schema(id)
+        print(current_schema_id)
+
+        schema_list = pyrime.get_schema_list()
+        schema_id_list = [schema.schema_id for schema in schema_list]
+        assert current_schema_id in schema_id_list
+        for i, schema in enumerate(schema_list):
+            print(schema, end="")
+            assert pyrime.select_schema(id, schema.schema_id)
+            curr_id = pyrime.get_current_schema(id)
+            assert curr_id == schema.schema_id
+
+        pyrime.select_schema(id, current_schema_id)
+
+        pyrime.destroy_session(id)
+
     test_session()
     test_maintenance()
     test_deploy(traits)
     test_input()
     test_page()
+    test_schema_list()
+
     pyrime.finalize()
