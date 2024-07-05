@@ -78,6 +78,26 @@ def test(tmpdir):
 
         pyrime.destroy_session(id)
 
+    def test_output_():
+        id = pyrime.create_session()
+        pyrime.set_input(id, "haohaohao")
+        context = pyrime._get_context(id)
+        assert isinstance(context, pyrime.RimeContext)
+        print(context)
+
+        status = pyrime._get_status(id)
+        assert isinstance(status, pyrime.RimeStatus)
+        assert status.is_composing == 1
+
+        pyrime.commit_composition(id)
+        commit = pyrime._get_commit(id)
+        assert isinstance(commit, str)
+
+        status = pyrime._get_status(id)
+        assert isinstance(status, pyrime.RimeStatus)
+        assert status.is_composing == 0
+        print(status)
+
     def test_page():
         id = pyrime.create_session()
         pyrime.set_input(id, "haohaohao")
@@ -129,6 +149,7 @@ def test(tmpdir):
     test_maintenance()
     test_deploy(traits)
     test_input()
+    test_output_()
     test_page()
     test_schema_list()
 
