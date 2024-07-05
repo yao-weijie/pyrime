@@ -1,3 +1,5 @@
+#include <X11/keysym.h>
+#include <X11/keysymdef.h>
 #include <pybind11/pybind11.h>
 #include <rime_api.h>
 
@@ -130,9 +132,9 @@ PYBIND11_MODULE(pyrime, m) {
     m.def("commit_composition", api->commit_composition, py::arg("session_id"));
     m.def("clear_composition", api->clear_composition, py::arg("session_id"));
     m.def("page_down",
-          [](const RimeSessionId session_id) { return api->process_key(session_id, K_PgDn, 0); });
+          [](const RimeSessionId session_id) { return api->process_key(session_id, XK_Next, 0); });
     m.def("page_up",
-          [](const RimeSessionId session_id) { api->process_key(session_id, K_PgUp, 0); });
+          [](const RimeSessionId session_id) { api->process_key(session_id, XK_Prior, 0); });
 
     // output
     m.def("get_context", api->get_context, py::arg("session_id"), py::arg("context"));

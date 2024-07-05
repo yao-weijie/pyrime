@@ -6,9 +6,6 @@
 
 namespace py = pybind11;
 
-#define K_PgUp 0xff55
-#define K_PgDn 0xff56
-
 py::str fmt_commit(const RimeCommit& commit);
 py::str fmt_traits(const RimeTraits& traits);
 py::str fmt_candidate(const RimeCandidate& candidate);
