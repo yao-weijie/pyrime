@@ -1,5 +1,5 @@
 from pathlib import Path
-import lib.pyrime as pyrime
+import pyrime
 
 
 def get_traits(tmpdir):

@@ -153,14 +153,17 @@ PYBIND11_MODULE(pyrime, m) {
     // output
     m.def("get_context", api->get_context, py::arg("session_id"), py::arg("context"));
     m.def("free_context", api->free_context, py::arg("context"));
-    m.def("_get_context", [](RimeSessionId session_id) -> RimeContext {
-        RIME_STRUCT(RimeContext, context);
-        api->get_context(session_id, &context);
-        return context;
-    });
+    m.def(
+        "get_context_",
+        [](RimeSessionId session_id) -> RimeContext {
+            RIME_STRUCT(RimeContext, context);
+            api->get_context(session_id, &context);
+            return context;
+        },
+        py::arg("session_id"));
     m.def("get_commit", api->get_commit, py::arg("session_id"), py::arg("commit"));
     m.def("free_commit", api->free_commit, py::arg("commit"));
-    m.def("_get_commit", [](RimeSessionId session_id) -> char* {
+    m.def("get_commit_", [](RimeSessionId session_id) -> char* {
         RIME_STRUCT(RimeCommit, commit);
         char* text;
         if (api->get_commit(session_id, &commit)) {
@@ -173,7 +176,7 @@ PYBIND11_MODULE(pyrime, m) {
     });
     m.def("get_status", api->get_status, py::arg("session_id"), py::arg("status"));
     m.def("free_status", api->free_status, py::arg("status"));
-    m.def("_get_status", [](RimeSessionId session_id) -> RimeStatus {
+    m.def("get_status_", [](RimeSessionId session_id) -> RimeStatus {
         RIME_STRUCT(RimeStatus, status);
         api->get_status(session_id, &status);
         return status;

@@ -1,4 +1,4 @@
-import lib.pyrime as pyrime
+import pyrime
 from config import get_traits
 
 
@@ -81,19 +81,19 @@ def test(tmpdir):
     def test_output_():
         id = pyrime.create_session()
         pyrime.set_input(id, "haohaohao")
-        context = pyrime._get_context(id)
+        context = pyrime.get_context_(id)
         assert isinstance(context, pyrime.RimeContext)
         print(context)
 
-        status = pyrime._get_status(id)
+        status = pyrime.get_status_(id)
         assert isinstance(status, pyrime.RimeStatus)
         assert status.is_composing == 1
 
         pyrime.commit_composition(id)
-        commit = pyrime._get_commit(id)
+        commit = pyrime.get_commit_(id)
         assert isinstance(commit, str)
 
-        status = pyrime._get_status(id)
+        status = pyrime.get_status_(id)
         assert isinstance(status, pyrime.RimeStatus)
         assert status.is_composing == 0
         print(status)

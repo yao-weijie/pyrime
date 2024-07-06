@@ -1,4 +1,4 @@
-import lib.pyrime as pyrime
+import pyrime
 
 
 def test_traits():
