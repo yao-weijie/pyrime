@@ -145,10 +145,14 @@ PYBIND11_MODULE(pyrime, m) {
           py::arg("mask") = 0);
     m.def("commit_composition", api->commit_composition, py::arg("session_id"));
     m.def("clear_composition", api->clear_composition, py::arg("session_id"));
-    m.def("page_down",
-          [](const RimeSessionId session_id) { return api->process_key(session_id, XK_Next, 0); });
-    m.def("page_up",
-          [](const RimeSessionId session_id) { api->process_key(session_id, XK_Prior, 0); });
+    m.def(
+        "page_down",
+        [](RimeSessionId session_id) -> Bool { return api->process_key(session_id, XK_Next, 0); },
+        py::arg("session_id"));
+    m.def(
+        "page_up",
+        [](RimeSessionId session_id) -> Bool { return api->process_key(session_id, XK_Prior, 0); },
+        py::arg("session_id"));
 
     // output
     m.def("get_context", api->get_context, py::arg("session_id"), py::arg("context"));
