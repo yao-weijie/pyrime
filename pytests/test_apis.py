@@ -28,6 +28,7 @@ def test(tmpdir):
     def test_input():
         id = pyrime.create_session()
         pyrime.set_input(id, "haohaohao")
+        assert pyrime.get_input(id) == "haohaohao"
 
         cand_list = pyrime.get_candidate_list(id)
         assert isinstance(cand_list, list)
@@ -66,6 +67,7 @@ def test(tmpdir):
         print(commit)
 
         # after commit
+        assert pyrime.get_input(id) == ""
         pyrime.get_context(id, context)
         assert context.commit_text_preview is None
         assert context.composition.length == 0
@@ -77,6 +79,7 @@ def test(tmpdir):
         # print(status)
 
         pyrime.destroy_session(id)
+        assert pyrime.get_input(id) is None
 
     def test_output_():
         id = pyrime.create_session()

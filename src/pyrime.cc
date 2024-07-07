@@ -138,6 +138,7 @@ PYBIND11_MODULE(pyrime, m) {
     m.def("cleanup_all_sessions", api->cleanup_all_sessions);
 
     // input
+    m.def("get_input", api->get_input, py::arg("session_id"));
     m.def("set_input", api->set_input, py::arg("session_id"), py::arg("input"));
     m.def("simulate_key_sequence", api->simulate_key_sequence, py::arg("session_id"),
           py::arg("key_sequence"));
