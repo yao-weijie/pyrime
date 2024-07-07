@@ -191,12 +191,8 @@ PYBIND11_MODULE(pyrime, m) {
         RimeCandidateListIterator it;
         api->candidate_list_begin(session_id, &it);
 
-        while (1) {
-            if (api->candidate_list_next(&it)) {
-                cand_list.append(strdup(it.candidate.text));
-            } else {
-                break;
-            }
+        while (api->candidate_list_next(&it)) {
+            cand_list.append(strdup(it.candidate.text));
         }
         return cand_list;
     });
